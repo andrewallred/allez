@@ -74,3 +74,6 @@ typings/
 
 # FuseBox cache
 .fusebox/
+sample_data/
+games/
+.DS_Store
