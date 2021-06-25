@@ -3,9 +3,9 @@ module.exports = { openConnection }
 require('dotenv').config()
 const WebSocket = require('ws');
 const axios = require('axios');
-const GoQuestGame = require('../classes/GoQuestGame');
-const GoQuestPlayer = require('../classes/GoQuestProfile');
-const GoQuestActiveGames = require('../classes/GoQuestActiveGames');
+const GoQuestGame = require('../classes/go-quest-game');
+const GoQuestPlayer = require('../classes/go-quest-profile');
+const GoQuestActiveGames = require('../classes/go-quest-active-games');
 
 let ws;
 
