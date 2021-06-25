@@ -5,6 +5,7 @@ const WebSocket = require('ws');
 const axios = require('axios');
 const GoQuestGame = require('../classes/GoQuestGame');
 const GoQuestPlayer = require('../classes/GoQuestProfile');
+const GoQuestActiveGames = require('../classes/GoQuestActiveGames');
 
 let ws;
 
@@ -20,13 +21,24 @@ async function openConnection() {
 
         console.log('sending profile request');
 
+        pollActiveGames();
+
         getProfile();
 
     });
 
+    ws.on('upgrade', function upgrade(request, socket, head) {
+
+        // console.log("upgrade");
+        // console.log(request);
+        // console.log(head);
+
+    });
+
+
     ws.on('message', function incoming(data) {
 
-        console.log(data);
+        //console.log(data);
 
         let regex = new RegExp('[0-9]*::$');
         let regexResults = regex.exec(data)
@@ -37,40 +49,73 @@ async function openConnection() {
 
         } else {
 
+            let goQuestActiveGames;
+
             try {
 
-                console.log("casting goQuestGame");
+                console.log("casting goQuestActiveGames");
 
-                let gameJson = data.replace('5:::', '');
-                let goQuestGame = GoQuestGame.toGoQuestGame(gameJson);
+                let gamesJson = data.replace('5:::', '');
+                goQuestActiveGames = GoQuestActiveGames.toGoQuestActiveGames(gamesJson);
+
+                console.log("success!");
 
             }
             catch (e) {
                 //console.log('exception ' + e)
-                console.log('could not cast to goQuestGame');
+                console.log('could not cast to goQuestActiveGames');
             }
 
-            let lastGame;
-            try {
+            if (!goQuestActiveGames) {
 
-                console.log("casting goQuestPlayer");
+                let goQuestGame;
+                try {
 
-                let playerJson = data.replace('5:::', '');
-                let goQuestPlayer = GoQuestPlayer.toGoQuestProfile(playerJson);
+                    console.log("casting goQuestGame");
 
-                lastGame = goQuestPlayer.args[0].lastGame;
+                    let gameJson = data.replace('5:::', '');
+                    goQuestGame = GoQuestGame.toGoQuestGame(gameJson);
 
-                console.log("last game is");
-                console.log(lastGame);
+                    console.log("success!");
 
-            }
-            catch (e) {
-                console.log('exception ' + e)
-                console.log('could not cast to goQuestPlayer')
-            }
+                    //$("#kif-export-box").val(z(this.model.players, this.model.get("position")));
+                    console.log(goQuestGame.args[0].players);
 
-            if (lastGame) {
-                getGame(lastGame);
+                }
+                catch (e) {
+                    console.log('exception ' + e)
+                    console.log('could not cast to goQuestGame');
+                }
+
+                if (!goQuestGame) {
+
+                    let lastGame;
+                    try {
+
+                        console.log("casting goQuestPlayer");
+
+                        let playerJson = data.replace('5:::', '');
+                        let goQuestPlayer = GoQuestPlayer.toGoQuestProfile(playerJson);
+
+                        console.log("success!");
+
+                        lastGame = goQuestPlayer.args[0].lastGame;
+
+                        console.log("last game is");
+                        console.log(lastGame);
+
+                    }
+                    catch (e) {
+                        console.log('exception ' + e)
+                        console.log('could not cast to goQuestPlayer')
+                    }
+
+                    if (lastGame) {
+                        getGame(lastGame);
+                    }
+
+                }
+
             }
 
         }
@@ -83,6 +128,8 @@ function getProfile() {
 
     console.log("getting profile");
     let profileMessage = process.env.GQ_PROFILE_MESSAGE.replace("PROFILE_ID", process.env.GQ_PROFILE_NAME);
+    console.log("sending message");
+    console.log(profileMessage);
     ws.send(profileMessage);
 
 }
@@ -91,7 +138,20 @@ function getGame(gameId) {
 
     console.log("getting game");
     let gameMessage = process.env.GQ_GAME_MESSAGE.replace("GAME_ID", gameId);
+    console.log("sending message");
+    
+    console.log(gameMessage);
     ws.send(gameMessage);
+
+}
+
+function pollActiveGames() {
+
+    console.log("getting active games");
+    console.log("sending message");
+    gamesMessage = '5:::{"name":"efa2bd1b","args":[{"env":"WEB","handicapV":"1","gtype":"go9"}]}'
+    console.log(gamesMessage);
+    ws.send(gamesMessage);
 
 }
 
