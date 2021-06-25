@@ -80,6 +80,7 @@ async function openConnection() {
 
                     //$("#kif-export-box").val(z(this.model.players, this.model.get("position")));
                     console.log(goQuestGame.args[0].players);
+                    console.log(GoQuestGame.toSgf(goQuestGame.args[0].players, goQuestGame.args[0].position));
 
                 }
                 catch (e) {
@@ -139,7 +140,6 @@ function getGame(gameId) {
     console.log("getting game");
     let gameMessage = process.env.GQ_GAME_MESSAGE.replace("GAME_ID", gameId);
     console.log("sending message");
-    
     console.log(gameMessage);
     ws.send(gameMessage);
 
