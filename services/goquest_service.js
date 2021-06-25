@@ -76,11 +76,7 @@ async function openConnection() {
                     let gameJson = data.replace('5:::', '');
                     goQuestGame = GoQuestGame.toGoQuestGame(gameJson);
 
-                    console.log("success!");
-
-                    //$("#kif-export-box").val(z(this.model.players, this.model.get("position")));
-                    console.log(goQuestGame.args[0].players);
-                    console.log(GoQuestGame.toSgf(goQuestGame.args[0].players, goQuestGame.args[0].position));
+                    console.log("success!");                    
 
                 }
                 catch (e) {
