@@ -6,8 +6,6 @@ const axios = require('axios');
 const cron = require('node-cron');
 const ogs = require('../services/ogs_service');
 const GoQuestGame = require('../classes/go-quest-game');
-const GoQuestPlayer = require('../classes/go-quest-profile');
-const GoQuestActiveGames = require('../classes/go-quest-active-games');
 
 let ws;
 
