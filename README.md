@@ -6,7 +6,7 @@ Allez is a Node tool to upload GoQuest games to OGS for AI analysis. GoQuest is 
 
 ## Where to find your games
 
-Allez uploads your games to your user library on OGS which can be found by clicking the hamburger menu in the top left corner and then selecting "SGF Library".
+Allez uploads your games to your user library on OGS. Your library can be found by clicking the hamburger menu in the top left corner and then selecting "SGF Library".
 
 ## Setup
 
