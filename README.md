@@ -4,6 +4,10 @@ Allez is a Node tool to upload GoQuest games to OGS for AI analysis. GoQuest is 
 
 ![Goban](/goban.jpg)
 
+## Where to find your games
+
+Allez uploads your games to your user library on OGS which can be found by clicking the hamburger menu in the top left corner and then selecting "SGF Library".
+
 ## Setup
 
 Setup is a bit of a bear, but put simply Allez runs as a Node cron job every 3 minutes and is easily hostable in Heroku. Allez needs a few different pieces of information to access your GoQuest and OGS accounts. You can find the needed fields in the sample.env file.
