@@ -3,6 +3,7 @@ module.exports = { openConnection }
 require('dotenv').config()
 const WebSocket = require('ws');
 const axios = require('axios');
+const cron = require('node-cron');
 const ogs = require('../services/ogs_service');
 const GoQuestGame = require('../classes/go-quest-game');
 const GoQuestPlayer = require('../classes/go-quest-profile');
@@ -10,6 +11,7 @@ const GoQuestActiveGames = require('../classes/go-quest-active-games');
 
 let ws;
 
+let cronStarted = false;
 async function openConnection() {
 
     let sessionData = await getSession();
@@ -24,9 +26,24 @@ async function openConnection() {
 
         pollActiveGames();
 
-        getProfile();
+        if (!cronStarted) {
+
+            getProfile();
+
+            // check games every minute
+            cron.schedule('* * * * *', () => {
+                getProfile();
+            });
+
+            cronStarted = true;
+        }
 
     });
+
+    // TBD if needed
+    // ws.on('close', function clear() {
+    //     //process.exit(1);
+    // });
 
     ws.on('message', async function incoming(data) {
 
@@ -68,7 +85,7 @@ async function openConnection() {
                     let gameJson = data.replace('5:::', '');
                     goQuestGame = GoQuestGame.toGoQuestGame(gameJson);
 
-                    console.log("success!");
+                    console.log("success casting to goQuestGame!");
 
                     let sgfAlreadyUploaded = await ogs.checkIfGameUploaded(goQuestGame.args[0].id);
                     if (!sgfAlreadyUploaded) {
@@ -76,6 +93,7 @@ async function openConnection() {
                         console.log("uploading sgf for game " + goQuestGame.args[0].id);
 
                         try {
+                            
                             let sgf = GoQuestGame.toSgf(goQuestGame.args[0].players, goQuestGame.args[0].position, goQuestGame.args[0].gtype);
                             console.log(sgf);
                             await ogs.uploadSgf(goQuestGame.args[0].id, sgf);                            
@@ -84,10 +102,9 @@ async function openConnection() {
                             console.log(e);
                         }
 
-                    }
-
-                    console.log("exiting");
-                    process.exit(0);
+                    } else {
+                        console.log("game already uploaded");
+                    }                    
 
                 }
                 catch (e) {
@@ -179,7 +196,9 @@ async function getSession() {
         }
     }
 
-    const results = await axios.get(sessionUrl, config);
+    const results = await axios.get(sessionUrl, config).catch(function (e) {
+        console.log("error getting session " + e);
+    });;
     const data = results.data;
 
     console.log(data);

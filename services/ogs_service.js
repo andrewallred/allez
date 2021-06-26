@@ -17,7 +17,10 @@ async function getLibrary() {
         }
     }
 
-    const results = await axios.get(libraryUrl, config);
+    const results = await axios.get(libraryUrl, config).catch(function (e) {
+        console.log("error getting library " + e);
+    });
+
     const data = results.data;
 
     return data;
@@ -42,10 +45,12 @@ async function uploadSgf(fileName, sgf) {
         }
     }
 
-     const results = await axios.post(saveUrl, formData, config);
-     const data = results.data;
+    const results = await axios.post(saveUrl, formData, config).catch(function (e) {
+        console.log("error uploading sgf " + e);
+    });;
+    const data = results.data;
 
-     console.log("done!");
+    console.log("done!");
 
 }
 
