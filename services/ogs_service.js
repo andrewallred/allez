@@ -54,17 +54,6 @@ async function uploadSgf(sgf) {
 
 }
 
-function stringToBinary(input) {
-    var characters = input.split('');
-  
-    return characters.map(function(char) {
-      const binary = char.charCodeAt(0).toString(2)
-      const pad = Math.max(8 - binary.length, 0);
-      // Just to make sure it is 8 bits long.
-      return '0'.repeat(pad) + binary;
-    }).join('');
-  }
-
 async function checkIfGameUploaded(gameName) {
 
     let library = await getLibrary();
