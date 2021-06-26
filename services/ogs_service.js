@@ -24,18 +24,14 @@ async function getLibrary() {
 
 }
 
-async function uploadSgf(sgf) {
+async function uploadSgf(fileName, sgf) {
 
     let saveUrl = process.env.OGS_SAVE_SGF_URL;
 
     const formData = new FormData();
 
-    // // Append any files to the request
-    //formData.append("file", chunk, { knownLength: chunk.length });
-    //let binary = stringToBinary(sgf);
-    //formData.append("file", binary, { knownLength: binary.length });
-
-    let file = "./games/game.sgf";
+    let file = './games/' + fileName + '.sgf';
+    fs.writeFileSync(file, sgf);
     formData.append("file", fs.createReadStream(file), { knownLength: fs.statSync(file).size });
 
     let config = {
@@ -50,7 +46,6 @@ async function uploadSgf(sgf) {
      const data = results.data;
 
      console.log("done!");
-     console.log(results);
 
 }
 
@@ -60,7 +55,7 @@ async function checkIfGameUploaded(gameName) {
 
     for (let i = 0; i < library.games.length; i++) {
         //console.log(library.games[i][6]);
-        if (library.games[i][6] == gameName) {
+        if (library.games[i][6] == gameName || library.games[i][6] == gameName + '.sgf') {
             return true;
         }
     }
