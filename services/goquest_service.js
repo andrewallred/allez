@@ -77,10 +77,14 @@ async function openConnection() {
                         try {
                             let sgf = GoQuestGame.toSgf(goQuestGame.args[0].players, goQuestGame.args[0].position, goQuestGame.args[0].gtype);
                             console.log(sgf);
-                            ogs.uploadSgf(goQuestGame.args[0].id, sgf);
+                            await ogs.uploadSgf(goQuestGame.args[0].id, sgf);                            
+
                         } catch (e) {
                             console.log(e);
                         }
+
+                        console.log("exiting");
+                        process.exit(1);
 
                     }
 
