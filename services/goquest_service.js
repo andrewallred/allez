@@ -179,7 +179,8 @@ function pollActiveGames() {
 
 async function getSession() {
 
-    let sessionUrl = process.env.GQ_SESSION_URL + +new Date
+    let sessionUrl = 'http://wars.fm:3002/socket.io/1/?t=';
+    sessionUrl = sessionUrl + +new Date
     console.log(sessionUrl);
 
     let config = {

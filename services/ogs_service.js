@@ -36,7 +36,8 @@ async function getBearerToken() {
 
 async function getLibrary() {
 
-    let libraryUrl = process.env.OGS_LIBRARY_URL.replace("USER_ID", process.env.OGS_USER_ID);
+    let libraryUrl = 'https://online-go.com/api/v1/library/USER_ID';
+    libraryUrl = libraryUrl.replace("USER_ID", process.env.OGS_USER_ID);
 
     let bearer = await getBearerToken();
     let config = {
@@ -57,7 +58,7 @@ async function getLibrary() {
 
 async function uploadSgf(fileName, sgf) {
 
-    let saveUrl = process.env.OGS_SAVE_SGF_URL;
+    let saveUrl = 'https://online-go.com/api/v1/me/games/sgf/0';
 
     const formData = new FormData();
 
