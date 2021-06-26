@@ -3,6 +3,7 @@ module.exports = { openConnection }
 require('dotenv').config()
 const WebSocket = require('ws');
 const axios = require('axios');
+const ogs = require('../services/ogs_service');
 const GoQuestGame = require('../classes/go-quest-game');
 const GoQuestPlayer = require('../classes/go-quest-profile');
 const GoQuestActiveGames = require('../classes/go-quest-active-games');
@@ -27,16 +28,7 @@ async function openConnection() {
 
     });
 
-    ws.on('upgrade', function upgrade(request, socket, head) {
-
-        // console.log("upgrade");
-        // console.log(request);
-        // console.log(head);
-
-    });
-
-
-    ws.on('message', function incoming(data) {
+    ws.on('message', async function incoming(data) {
 
         //console.log(data);
 
@@ -45,7 +37,7 @@ async function openConnection() {
 
         if (regexResults && regexResults.length > 0) {
 
-            // this is a keep alive message
+            // this is a keep alive message and can be ignored
 
         } else {
 
@@ -76,11 +68,29 @@ async function openConnection() {
                     let gameJson = data.replace('5:::', '');
                     goQuestGame = GoQuestGame.toGoQuestGame(gameJson);
 
-                    console.log("success!");                    
+                    console.log("success!");
+
+                    //$("#kif-export-box").val(z(this.model.players, this.model.get("position")));
+                    //console.log(goQuestGame.args[0].players);
+                    //console.log(GoQuestGame.toSgf(goQuestGame.args[0].players, goQuestGame.args[0].position));
+
+                    let sgfAlreadyUploaded = await ogs.checkIfGameUploaded(goQuestGame.args[0].id);
+                    if (!sgfAlreadyUploaded) {
+                        console.log("uploading sgf for game " + goQuestGame.args[0].id);
+
+                        try {
+                            let sgf = GoQuestGame.toSgf(goQuestGame.args[0].players, goQuestGame.args[0].position, goQuestGame.args[0].gtype);
+                            console.log(sgf);
+                            ogs.uploadSgf(sgf);
+                        } catch (e) {
+                            console.log(e);
+                        }
+
+                    }
 
                 }
                 catch (e) {
-                    console.log('exception ' + e)
+                    //console.log('exception ' + e)
                     console.log('could not cast to goQuestGame');
                 }
 
