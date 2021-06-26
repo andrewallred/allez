@@ -72,6 +72,7 @@ async function openConnection() {
 
                     let sgfAlreadyUploaded = await ogs.checkIfGameUploaded(goQuestGame.args[0].id);
                     if (!sgfAlreadyUploaded) {
+
                         console.log("uploading sgf for game " + goQuestGame.args[0].id);
 
                         try {
@@ -83,10 +84,10 @@ async function openConnection() {
                             console.log(e);
                         }
 
-                        console.log("exiting");
-                        process.exit(1);
-
                     }
+
+                    console.log("exiting");
+                    process.exit(0);
 
                 }
                 catch (e) {
