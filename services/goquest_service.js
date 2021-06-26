@@ -3,13 +3,11 @@ module.exports = { openConnection }
 require('dotenv').config()
 const WebSocket = require('ws');
 const axios = require('axios');
-const cron = require('node-cron');
 const ogs = require('../services/ogs_service');
 const GoQuestGame = require('../classes/go-quest-game');
 
 let ws;
 
-let cronStarted = false;
 async function openConnection() {
 
     let sessionData = await getSession();
@@ -23,18 +21,7 @@ async function openConnection() {
         console.log('sending profile request');
 
         pollActiveGames();
-
-        if (!cronStarted) {
-
-            getProfile();
-
-            // check games every minute
-            cron.schedule('* * * * *', () => {
-                getProfile();
-            });
-
-            cronStarted = true;
-        }
+        getProfile();        
 
     });
 
@@ -45,8 +32,6 @@ async function openConnection() {
 
     ws.on('message', async function incoming(data) {
 
-        //console.log(data);
-
         let regex = new RegExp('[0-9]*::$');
         let regexResults = regex.exec(data)
 
@@ -56,96 +41,60 @@ async function openConnection() {
 
         } else {
 
-            let goQuestActiveGames;
+            // game ba276087
+            // profile d4b6e7ef
 
-            try {
+            let message = JSON.parse(data.replace('5:::', ''));
 
-                console.log("casting goQuestActiveGames");
+            if (message.name == "ba276087") {
 
-                let gamesJson = data.replace('5:::', '');
-                goQuestActiveGames = GoQuestActiveGames.toGoQuestActiveGames(gamesJson);
+                console.log("received game");
 
-                console.log("success!");
+                let goQuestGame = message;
+                console.log("checking for game " + goQuestGame.args[0].id);
+                let sgfAlreadyUploaded = await ogs.checkIfGameUploaded(goQuestGame.args[0].id);
+                if (!sgfAlreadyUploaded) {
 
-            }
-            catch (e) {
-                //console.log('exception ' + e)
-                console.log('could not cast to goQuestActiveGames');
-            }
+                    console.log("uploading sgf for game " + goQuestGame.args[0].id);
 
-            if (!goQuestActiveGames) {
-
-                let goQuestGame;
-                try {
-
-                    console.log("casting goQuestGame");
-
-                    let gameJson = data.replace('5:::', '');
-                    goQuestGame = GoQuestGame.toGoQuestGame(gameJson);
-
-                    console.log("success casting to goQuestGame!");
-
-                    let sgfAlreadyUploaded = await ogs.checkIfGameUploaded(goQuestGame.args[0].id);
-                    if (!sgfAlreadyUploaded) {
-
-                        console.log("uploading sgf for game " + goQuestGame.args[0].id);
-
-                        try {
-                            
-                            let sgf = GoQuestGame.toSgf(goQuestGame.args[0].players, goQuestGame.args[0].position, goQuestGame.args[0].gtype);
-                            console.log(sgf);
-                            await ogs.uploadSgf(goQuestGame.args[0].id, sgf);                            
-
-                        } catch (e) {
-                            console.log(e);
-                        }
-
-                    } else {
-                        console.log("game already uploaded");
-                    }                    
-
-                }
-                catch (e) {
-                    //console.log('exception ' + e)
-                    console.log('could not cast to goQuestGame');
-                }
-
-                if (!goQuestGame) {
-
-                    let lastGame;
                     try {
 
-                        console.log("casting goQuestPlayer");
+                        let sgf = GoQuestGame.toSgf(goQuestGame.args[0].players, goQuestGame.args[0].position, goQuestGame.args[0].gtype);
+                        await ogs.uploadSgf(goQuestGame.args[0].id, sgf);
 
-                        let playerJson = data.replace('5:::', '');
-                        let goQuestPlayer = GoQuestPlayer.toGoQuestProfile(playerJson);
-
-                        console.log("success!");
-
-                        lastGame = goQuestPlayer.args[0].lastGame;
-
-                        console.log("last game is");
-                        console.log(lastGame);
-
-                    }
-                    catch (e) {
-                        console.log('exception ' + e)
-                        console.log('could not cast to goQuestPlayer')
+                    } catch (e) {
+                        console.log(e);
                     }
 
-                    if (lastGame) {
-                        getGame(lastGame);
-                    }
-
+                } else {
+                    console.log("game already uploaded");
                 }
+
+                ws.close();
 
             }
 
+            if (message.name == "d4b6e7ef") {
+
+                console.log("received user");
+
+                let playerJson = message;                
+                let lastGame = playerJson.args[0].lastGame;
+
+                console.log("last game is");
+                console.log(lastGame);
+
+                if (lastGame) {
+                    getGame(lastGame);
+                }
+
+            }
         }
 
     });
 
 }
+
 
 function getProfile() {
 
