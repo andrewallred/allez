@@ -24,13 +24,13 @@ OGS_PASSWORD=
 ```
 
 #### GQ_PROFILE_MESSAGE
-GQ_PROFILE_MESSAGE is the websocket message GoQuest sends to load a user profile. It will likely be moved out of config as it is not user specific.
+GQ_PROFILE_MESSAGE is the websocket message the GoQuest client sends to load a user profile. It will likely be moved out of config as it is not user specific.
 
 #### GQ_PROFILE_NAME
 GQ_PROFILE_NAME is your profile name on GoQuest.
 
 #### GQ_GAME_MESSAGE
-GQ_GAME_MESSAGE is the websocket message GoQuest sends to load a specific game.
+GQ_GAME_MESSAGE is the websocket message the GoQuest client sends to load a specific game.
 
 #### OGS_USER_ID
 OGS_USER_ID is your user id on OGS.
