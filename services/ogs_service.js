@@ -62,7 +62,7 @@ async function uploadSgf(fileName, sgf) {
 
     const formData = new FormData();
 
-    let file = './games/' + fileName + '.sgf';
+    let file = './games/' + fileName;
     fs.writeFileSync(file, sgf);
     formData.append("file", fs.createReadStream(file), { knownLength: fs.statSync(file).size });
 
@@ -89,7 +89,7 @@ async function checkIfGameUploaded(gameName) {
     let library = await getLibrary();
 
     for (let i = 0; i < library.games.length; i++) {
-        if (library.games[i][6] == gameName || library.games[i][6] == gameName + '.sgf') {
+        if (library.games[i][6] == gameName || library.games[i][6] == gameName) {
             return true;
         }
     }
