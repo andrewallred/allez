@@ -27,14 +27,14 @@ function getFileName(game) {
     
     let isBlack = game.args[0].players[0].name == process.env.GQ_PROFILE_NAME;
 
-    let fileName = game.args[0].id;
+    //let fileName = game.args[0].id;
     let opening = game.args[0].attrs[2];
     if (!isBlack) {
         opening = game.args[0].attrs[4];
     }
     console.log(opening);
     
-    return opening.replace("opening:", "") + " " + fileName;
+    return opening.replace("opening:", "");
 }
 
 module.exports = {
