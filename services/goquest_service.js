@@ -51,16 +51,16 @@ async function openConnection() {
                 console.log("received game");
 
                 let goQuestGame = message;
-                console.log("checking for game " + goQuestGame.args[0].id);
-                let sgfAlreadyUploaded = await ogs.checkIfGameUploaded(goQuestGame.args[0].id);
+                console.log("checking for game " + GoQuestGame.getFileName(goQuestGame));
+                let sgfAlreadyUploaded = await ogs.checkIfGameUploaded(GoQuestGame.getFileName(goQuestGame));
                 if (!sgfAlreadyUploaded) {
 
-                    console.log("uploading sgf for game " + goQuestGame.args[0].id);
+                    console.log("uploading sgf for game " + GoQuestGame.getFileName(goQuestGame));
 
                     try {
 
                         let sgf = GoQuestGame.toSgf(goQuestGame.args[0].players, goQuestGame.args[0].position, goQuestGame.args[0].gtype);
-                        await ogs.uploadSgf(goQuestGame.args[0].id, sgf);
+                        await ogs.uploadSgf(GoQuestGame.getFileName(goQuestGame), sgf);
 
                     } catch (e) {
                         console.log(e);
