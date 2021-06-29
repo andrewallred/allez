@@ -3,7 +3,6 @@ module.exports = { getLibrary, checkIfGameUploaded, uploadSgf }
 require('dotenv').config()
 const axios = require('axios');
 const FormData = require('form-data');
-const Readable = require("stream");
 const fs = require('fs');
 let ws;
 
