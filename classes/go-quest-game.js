@@ -24,7 +24,7 @@ function toSgf(b, d, gtype) {
 }
 
 function getFileName(game) {
-    
+
     let isBlack = game.args[0].players[0].name == process.env.GQ_PROFILE_NAME;
 
     let id = game.args[0].id;
@@ -33,8 +33,14 @@ function getFileName(game) {
         opening = game.args[0].attrs[4];
     }
     console.log(opening);
-    
-    return opening.replace("opening:", "") + " - " + id;
+
+    if (opening && opening.includes("opening:")) {
+        opening = opening.replace("opening:", "") + " - ";
+    } else {
+        opening = "";
+    }
+
+    return opening + id;
 }
 
 module.exports = {
