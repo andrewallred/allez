@@ -21,7 +21,7 @@ async function openConnection() {
         console.log('sending profile request');
 
         pollActiveGames();
-        getProfile();        
+        getProfile();
 
     });
 
@@ -78,15 +78,15 @@ async function openConnection() {
 
                 console.log("received user");
 
-                let playerJson = message;                
-                let lastGame = playerJson.args[0].lastGame;
+                let playerJson = message;
+              let lastGame = playerJson.args[0].lastGame;
 
-                console.log("last game is");
-                console.log(lastGame);
+              console.log("last game is");
+              console.log(lastGame);
 
-                if (lastGame) {
-                    getGame(lastGame);
-                }
+              if (lastGame) {
+                getGame(lastGame);
+              }
 
             }
         }
@@ -97,23 +97,19 @@ async function openConnection() {
 
 
 function getProfile() {
-
-    console.log("getting profile");
-    let profileMessage = process.env.GQ_PROFILE_MESSAGE.replace("PROFILE_ID", process.env.GQ_PROFILE_NAME);
-    console.log("sending message");
-    console.log(profileMessage);
-    ws.send(profileMessage);
-
+  console.log("getting profile");
+  let profileMessage = process.env.GQ_PROFILE_MESSAGE.replace("PROFILE_ID", process.env.GQ_PROFILE_NAME).replace("BOARD_SIZE", 9);
+  console.log("sending message");
+  console.log(profileMessage);
+  ws.send(profileMessage);
 }
 
 function getGame(gameId) {
-
-    console.log("getting game");
-    let gameMessage = process.env.GQ_GAME_MESSAGE.replace("GAME_ID", gameId);
-    console.log("sending message");
-    console.log(gameMessage);
-    ws.send(gameMessage);
-
+  console.log("getting game");
+  let gameMessage = process.env.GQ_GAME_MESSAGE.replace("GAME_ID", gameId).replace("PROFILE_ID", process.env.GQ_PROFILE_NAME);
+  console.log("sending message");
+  console.log(gameMessage);
+  ws.send(gameMessage);
 }
 
 function pollActiveGames() {
