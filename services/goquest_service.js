@@ -7,98 +7,121 @@ const ogs = require('../services/ogs_service');
 const GoQuestGame = require('../classes/go-quest-game');
 
 let ws;
+let state = 'initial';
 
-async function openConnection() {
+async function openConnection(resolve) {
 
-    let sessionData = await getSession();
-    let sessionKey = sessionData[0];
-    let webSocketUrl = 'ws://wars.fm:3002/socket.io/1/websocket/' + sessionKey;
-    console.log(webSocketUrl);
-    ws = new WebSocket(webSocketUrl);
+  let sessionData = await getSession();
+  let sessionKey = sessionData[0];
+  let webSocketUrl = 'ws://wars.fm:3002/socket.io/1/websocket/' + sessionKey;
+  console.log(webSocketUrl);
+  ws = new WebSocket(webSocketUrl);
 
-    ws.on('open', function open() {
+  state = 'board9';
 
-        console.log('sending profile request');
+  ws.on('open', function open() {
 
-        pollActiveGames();
-        getProfile();
+    console.log('sending profile request');
 
-    });
+    pollActiveGames();
+    getProfile(9);
+  });
 
-    // TBD if needed
-    // ws.on('close', function clear() {
-    //     //process.exit(1);
-    // });
+  // TBD if needed
+  // ws.on('close', function clear() {
+  //     //process.exit(1);
+  // });
 
-    ws.on('message', async function incoming(data) {
+  ws.on('message', async function incoming(data) {
 
-        let regex = new RegExp('[0-9]*::$');
-        let regexResults = regex.exec(data)
+    let regex = new RegExp('[0-9]*::$');
+    let regexResults = regex.exec(data)
 
-        if (regexResults && regexResults.length > 0) {
+    if (regexResults && regexResults.length > 0) {
 
-            // this is a keep alive message and can be ignored
+      // this is a keep alive message and can be ignored
 
-        } else {
+    } else {
 
-            // game ba276087
-            // profile d4b6e7ef
+      // game ba276087
+      // profile d4b6e7ef
 
-            let message = JSON.parse(data.replace('5:::', ''));
+      let message = JSON.parse(data.replace('5:::', ''));
 
-            if (message.name == "ba276087") {
+      if (message.name == "ba276087") {
 
-                console.log("received game");
+        console.log("received game", message);
 
-                let goQuestGame = message;
-                console.log("checking for game " + GoQuestGame.getFileName(goQuestGame));
-                let sgfAlreadyUploaded = await ogs.checkIfGameUploaded(GoQuestGame.getFileName(goQuestGame));
-                if (!sgfAlreadyUploaded) {
+        let goQuestGame = message;
+        if (goQuestGame.args[0].error)
+        {
+          console.log('Game has an error: ', goQuestGame.args[0].error)
+          console.log('SKIPING')
+        }
+        else
+        {
+          console.log("checking for game " + GoQuestGame.getFileName(goQuestGame));
+          let sgfAlreadyUploaded = await ogs.checkIfGameUploaded(GoQuestGame.getFileName(goQuestGame));
+          if (!sgfAlreadyUploaded) {
 
-                    console.log("uploading sgf for game " + GoQuestGame.getFileName(goQuestGame));
+            console.log("uploading sgf for game " + GoQuestGame.getFileName(goQuestGame));
 
-                    try {
+            try {
 
-                        let sgf = GoQuestGame.toSgf(goQuestGame.args[0].players, goQuestGame.args[0].position, goQuestGame.args[0].gtype);
-                        await ogs.uploadSgf(GoQuestGame.getFileName(goQuestGame), sgf);
+              let sgf = GoQuestGame.toSgf(goQuestGame.args[0].players, goQuestGame.args[0].position, goQuestGame.args[0].gtype);
+              await ogs.uploadSgf(GoQuestGame.getFileName(goQuestGame), sgf);
 
-                    } catch (e) {
-                        console.log(e);
-                    }
-
-                } else {
-                    console.log("game already uploaded");
-                }
-
-                ws.close();
-
+            } catch (e) {
+              console.log(e);
             }
 
-            if (message.name == "d4b6e7ef") {
-
-                console.log("received user");
-
-                let playerJson = message;
-              let lastGame = playerJson.args[0].lastGame;
-
-              console.log("last game is");
-              console.log(lastGame);
-
-              if (lastGame) {
-                getGame(lastGame);
-              }
-
-            }
+          } else {
+            console.log("game already uploaded");
+          }
         }
 
-    });
+        changeState(resolve);
+      }
 
+      if (message.name == "d4b6e7ef") {
+
+        console.log("received user");
+
+        let playerJson = message;
+        let lastGame = playerJson.args[0].lastGame;
+
+        console.log("last game is", lastGame);
+
+        if (lastGame) {
+          getGame(lastGame);
+        } else {
+          changeState(resolve);
+        }
+
+      }
+    }
+
+  });
 }
 
+function changeState(resolve) {
+  if (state == 'board9') {
+    state = 'board13';
+    getProfile(13);
+  } else if (state == 'board13') {
+    state = 'board19';
+    getProfile(19)
+  } else {
+    state = 'finished';
+    console.log('finished');
+    ws.close();
+    resolve(null, 200);
+  }
+}
 
-function getProfile() {
-  console.log("getting profile");
-  let profileMessage = process.env.GQ_PROFILE_MESSAGE.replace("PROFILE_ID", process.env.GQ_PROFILE_NAME).replace("BOARD_SIZE", 9);
+function getProfile(boardSize) {
+  console.log("getting profile for board size ", boardSize);
+  let profileMessage = process.env.GQ_PROFILE_MESSAGE.replace("PROFILE_ID", process.env.GQ_PROFILE_NAME).replace("BOARD_SIZE", boardSize);
   console.log("sending message");
   console.log(profileMessage);
   ws.send(profileMessage);
@@ -114,39 +137,39 @@ function getGame(gameId) {
 
 function pollActiveGames() {
 
-    console.log("getting active games");
-    console.log("sending message");
-    gamesMessage = '5:::{"name":"efa2bd1b","args":[{"env":"WEB","handicapV":"1","gtype":"go9"}]}'
-    console.log(gamesMessage);
-    ws.send(gamesMessage);
+  console.log("getting active games");
+  console.log("sending message");
+  gamesMessage = '5:::{"name":"efa2bd1b","args":[{"env":"WEB","handicapV":"1","gtype":"go9"}]}'
+  console.log(gamesMessage);
+  ws.send(gamesMessage);
 
 }
 
 async function getSession() {
 
-    let sessionUrl = 'http://wars.fm:3002/socket.io/1/?t=';
-    sessionUrl = sessionUrl + +new Date
-    console.log(sessionUrl);
+  let sessionUrl = 'http://wars.fm:3002/socket.io/1/?t=';
+  sessionUrl = sessionUrl + +new Date
+  console.log(sessionUrl);
 
-    let config = {
-        headers: {
-            "Pragma": "no-cache",
-            "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Mobile Safari/537.36",
-            "Connection": "keep-alive",
-            "Cache-control": "no-cache",
-            "Accept": "*/*",
-            "Origin": "http://wars.fm",
-            "Referer": "http://wars.fm/"
-        }
+  let config = {
+    headers: {
+      "Pragma": "no-cache",
+      "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Mobile Safari/537.36",
+      "Connection": "keep-alive",
+      "Cache-control": "no-cache",
+      "Accept": "*/*",
+      "Origin": "http://wars.fm",
+      "Referer": "http://wars.fm/"
     }
+  }
 
-    const results = await axios.get(sessionUrl, config).catch(function (e) {
-        console.log("error getting session " + e);
-    });;
-    const data = results.data;
+  const results = await axios.get(sessionUrl, config).catch(function (e) {
+    console.log("error getting session " + e);
+  });;
+  const data = results.data;
 
-    console.log(data);
+  console.log(data);
 
-    return data.split(":");
+  return data.split(":");
 
 }
