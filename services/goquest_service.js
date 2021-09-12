@@ -21,7 +21,7 @@ async function openConnection() {
         console.log('sending profile request');
 
         pollActiveGames();
-        getProfile();        
+        getProfile();
 
     });
 
@@ -52,22 +52,27 @@ async function openConnection() {
 
                 let goQuestGame = message;
                 console.log("checking for game " + GoQuestGame.getFileName(goQuestGame));
-                let sgfAlreadyUploaded = await ogs.checkIfGameUploaded(GoQuestGame.getFileName(goQuestGame));
-                if (!sgfAlreadyUploaded) {
-
-                    console.log("uploading sgf for game " + GoQuestGame.getFileName(goQuestGame));
-
-                    try {
-
-                        let sgf = GoQuestGame.toSgf(goQuestGame.args[0].players, goQuestGame.args[0].position, goQuestGame.args[0].gtype);
-                        await ogs.uploadSgf(GoQuestGame.getFileName(goQuestGame), sgf);
-
-                    } catch (e) {
-                        console.log(e);
-                    }
-
+                if (goQuestGame.args[0].error)
+                {
+                  console.log('Game has an error: ', goQuestGame.args[0].error)
                 } else {
-                    console.log("game already uploaded");
+                  let sgfAlreadyUploaded = await ogs.checkIfGameUploaded(GoQuestGame.getFileName(goQuestGame));
+                  if (!sgfAlreadyUploaded) {
+
+                      console.log("uploading sgf for game " + GoQuestGame.getFileName(goQuestGame));
+
+                      try {
+
+                          let sgf = GoQuestGame.toSgf(goQuestGame.args[0].players, goQuestGame.args[0].position, goQuestGame.args[0].gtype);
+                          await ogs.uploadSgf(GoQuestGame.getFileName(goQuestGame), sgf);
+
+                      } catch (e) {
+                          console.log(e);
+                      }
+
+                  } else {
+                      console.log("game already uploaded");
+                  }
                 }
 
                 ws.close();
@@ -78,7 +83,7 @@ async function openConnection() {
 
                 console.log("received user");
 
-                let playerJson = message;                
+                let playerJson = message;
                 let lastGame = playerJson.args[0].lastGame;
 
                 console.log("last game is");
