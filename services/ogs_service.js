@@ -61,7 +61,14 @@ async function uploadSgf(fileName, sgf) {
 
     const formData = new FormData();
 
-    let file = './games/' + fileName;
+    let gamesFolder = process.env.GAMES_FOLDER;
+    if (!(process.env.GAMES_FOLDER)) {
+        gamesFolder = './games/';
+    }
+
+    console.log("games folder is " + gamesFolder);
+
+    let file = gamesFolder + fileName;
     fs.writeFileSync(file, sgf);
     formData.append("file", fs.createReadStream(file), { knownLength: fs.statSync(file).size });
 
