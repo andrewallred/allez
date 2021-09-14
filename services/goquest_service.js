@@ -7,6 +7,7 @@ const ogs = require('../services/ogs_service');
 const GoQuestGame = require('../classes/go-quest-game');
 
 let ws;
+let state = 'board9';
 
 async function openConnection() {
 
@@ -21,7 +22,7 @@ async function openConnection() {
         console.log('sending profile request');
 
         pollActiveGames();
-        getProfile();
+        getProfile(9);
 
     });
 
@@ -49,6 +50,7 @@ async function openConnection() {
             if (message.name == "ba276087") {
 
                 console.log("received game");
+                console.log(JSON.stringify(message));
 
                 let goQuestGame = message;
                 console.log("checking for game " + GoQuestGame.getFileName(goQuestGame));
@@ -75,8 +77,7 @@ async function openConnection() {
                   }
                 }
 
-                ws.close();
-
+                changeState();
             }
 
             if (message.name == "d4b6e7ef") {
@@ -91,8 +92,9 @@ async function openConnection() {
 
                 if (lastGame) {
                     getGame(lastGame);
+                } else {
+                  changeState();
                 }
-
             }
         }
 
@@ -100,13 +102,25 @@ async function openConnection() {
 
 }
 
+function changeState() {
+    if (state == 'board9') {
+        state = 'board13';
+        getProfile(13);
+    } else if (state == 'board13') {
+        state = 'board19';
+        getProfile(19)
+    } else {
+        state = 'finished';
+        console.log('finished');
+        ws.close();
+    }
+}
 
-function getProfile() {
-
-    console.log("getting profile");
-
-    let profileMessage = '5:::{"name":"d4b6e7ef","args":[{"id":"PROFILE_ID","gtype":"go9"}]}';
-    profileMessage = profileMessage.replace("PROFILE_ID", process.env.GQ_PROFILE_NAME);
+function getProfile(boardSize) {
+    console.log("getting profile for board size ", boardSize);
+    let profileMessage = '5:::{"name":"d4b6e7ef","args":[{"id":"PROFILE_ID","gtype":"BOARD_SIZE"}]}'
+        .replace("PROFILE_ID", process.env.GQ_PROFILE_NAME)
+        .replace("BOARD_SIZE", "go" + boardSize)
     console.log("sending message");
     console.log(profileMessage);
     ws.send(profileMessage);
