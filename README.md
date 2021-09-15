@@ -13,7 +13,6 @@ Allez uploads your games to your user library on OGS. Your library can be found 
 Setup is a bit of a bear, but put simply Allez runs as a Node cron job every 3 minutes and is easily hostable in Heroku. Allez needs a few different pieces of information to access your GoQuest and OGS accounts. You can find the needed fields in the sample.env file.
 
 ```
-GQ_PROFILE_MESSAGE=
 GQ_PROFILE_NAME=
 GQ_GAME_MESSAGE=
 OGS_USER_ID=
@@ -22,9 +21,6 @@ OGS_CLIENT_SECRET=
 OGS_USERNAME=
 OGS_PASSWORD=
 ```
-
-#### GQ_PROFILE_MESSAGE
-GQ_PROFILE_MESSAGE is the websocket message the GoQuest client sends to load a user profile. It will likely be moved out of config as it is not user specific.
 
 #### GQ_PROFILE_NAME
 GQ_PROFILE_NAME is your profile name on GoQuest.
