@@ -26,7 +26,7 @@ function getFileName(game) {
 
     let isBlack = game.args[0].players[0].name == process.env.GQ_PROFILE_NAME;
 
-    let size = game.args[0].gtype.replaceAll("go", "");
+    let size = game.args[0].gtype.replace("go", "");
     let sizeStr = size + "x" + size;
     let created = game.args[0].created;
 
