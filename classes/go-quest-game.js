@@ -42,7 +42,7 @@ function getFileName(game) {
         opening = "";
     }
 
-    return "GoQuest - " + opening + sizeStr + " - " + created;
+    return opening + sizeStr + " - " + created;
 }
 
 module.exports = {

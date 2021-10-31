@@ -57,7 +57,16 @@ async function getLibrary() {
 
 async function uploadSgf(fileName, sgf) {
 
-    let saveUrl = 'https://online-go.com/api/v1/me/games/sgf/0';
+    let library = await getLibrary();
+
+    let collectionId = 0;
+    for (let i = 0; i < library.collections.length; i++) {
+        if (library.collections[i][1] == "GoQuest") {
+            collectionId = library.collections[i][0];
+        }
+    }
+
+    let saveUrl = 'https://online-go.com/api/v1/me/games/sgf/' + collectionId;
 
     const formData = new FormData();
 
@@ -94,8 +103,15 @@ async function checkIfGameUploaded(gameName) {
 
     let library = await getLibrary();
 
+    let collectionId = null;
+    for (let i = 0; i < library.collections.length; i++) {
+        if (library.collections[i][1] == "GoQuest") {
+            collectionId = library.collections[i][0];
+        }
+    }
+
     for (let i = 0; i < library.games.length; i++) {
-        if (library.games[i][6] == gameName || library.games[i][6] == gameName) {
+        if (library.games[i][6] == gameName && library.games[i][2] == collectionId) {
             return true;
         }
     }
