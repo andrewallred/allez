@@ -28,7 +28,10 @@ function getFileName(game) {
 
     let size = game.args[0].gtype.replace("go", "");
     let sizeStr = size + "x" + size;
-    let created = new Date(game.args[0].created).toLocaleTimeString();
+    
+    let locale = process.env.LOCALE;
+    let timeZone = process.env.TIMEZONE;
+    let created = new Date(game.args[0].created).toLocaleTimeString(locale,{timeZone:timeZone});
 
     let opening = game.args[0].attrs[2];
     if (!isBlack) {
