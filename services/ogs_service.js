@@ -119,3 +119,58 @@ async function checkIfGameUploaded(gameName) {
     return false;
 
 }
+
+// TODO determine if the below methods can be used, current issue is that they return a 401 or 403
+async function createGoQuestCollection() {
+
+    let createCollectionUrl = 'https://online-go.com/api/v1/library/USER_ID/collections';
+    createCollectionUrl = createCollectionUrl.replace("USER_ID", process.env.OGS_USER_ID);
+
+    console.log(createCollectionUrl);
+
+    let bearer = await getBearerToken();
+    let config = {
+        headers: {
+            "Authorization": bearer
+        },
+        data: {parent_id: 0, name: "GoQuest", private: 0}
+    }
+
+    const results = await axios.post(createCollectionUrl, config).catch(function (e) {
+        console.log("error creating GoQuest collection " + e);
+    });
+
+    console.log(results);
+
+    const data = results.data;
+
+    console.log("done!");
+
+    return data.collection_id;
+
+}
+
+async function triggerGameReview(gameId) {
+
+    let triggerReviewUrl = 'https://online-go.com/api/v1/games/GAME_ID/ai_reviews';
+    triggerReviewUrl = triggerReviewUrl.replace("GAME_ID", gameId);
+
+    console.log(triggerReviewUrl);
+
+    let bearer = await getBearerToken();
+    let config = {
+        headers: {
+            "Authorization": bearer
+        },
+        data: {type: "full", engine: "katago"}
+    }
+
+    const results = await axios.post(triggerReviewUrl, config).catch(function (e) {
+        console.log("error triggering game review " + e);
+    });
+
+    console.log(results);
+
+    console.log("done!");
+
+}
