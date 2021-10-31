@@ -1,4 +1,3 @@
-
 function toSgf(b, d, gtype) {
     var f = b[0]
         , g = b[1]
@@ -27,22 +26,25 @@ function getFileName(game) {
 
     let isBlack = game.args[0].players[0].name == process.env.GQ_PROFILE_NAME;
 
-    let id = game.args[0].id;
+    let size = game.args[0].gtype.replace("go", "");
+    let sizeStr = size + "x" + size;
+    let created = new Date(game.args[0].created).toLocaleTimeString();
+
     let opening = game.args[0].attrs[2];
     if (!isBlack) {
         opening = game.args[0].attrs[4];
     }
-    console.log(opening);
+    console.log(created, opening, size);
 
     if (opening && opening.includes("opening:")) {
         opening = opening.replace("opening:", "") + " - ";
     }
 
     if (!(opening)) {
-        opening = ""
+        opening = id;
     }
 
-    let fileName = opening + id;
+    let fileName = opening + sizeStr + " - " + created;
     console.log("filename is " + fileName);
     return fileName;
 }
