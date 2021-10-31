@@ -104,7 +104,9 @@ async function openConnection() {
 function getProfile() {
 
     console.log("getting profile");
-    let profileMessage = process.env.GQ_PROFILE_MESSAGE.replace("PROFILE_ID", process.env.GQ_PROFILE_NAME);
+
+    let profileMessage = '5:::{"name":"d4b6e7ef","args":[{"id":"PROFILE_ID","gtype":"go9"}]}';
+    profileMessage = profileMessage.replace("PROFILE_ID", process.env.GQ_PROFILE_NAME);
     console.log("sending message");
     console.log(profileMessage);
     ws.send(profileMessage);

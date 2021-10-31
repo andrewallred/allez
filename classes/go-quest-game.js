@@ -38,11 +38,15 @@ function getFileName(game) {
 
     if (opening && opening.includes("opening:")) {
         opening = opening.replace("opening:", "") + " - ";
-    } else {
-        opening = "";
     }
 
-    return opening + sizeStr + " - " + created;
+    if (!(opening)) {
+        opening = id;
+    }
+
+    let fileName = opening + sizeStr + " - " + created;
+    console.log("filename is " + fileName);
+    return fileName;
 }
 
 module.exports = {
