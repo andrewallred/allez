@@ -10,7 +10,7 @@ Allez uploads your games to your user library on OGS. Your library can be found 
 
 ## Setup
 
-Setup is a bit of a bear, but put simply Allez runs as a Node cron job every 3 minutes and is easily hostable in Heroku. Allez needs a few different pieces of information to access your GoQuest and OGS accounts. You can find the needed fields in the sample.env file.
+Setup is a bit of a bear, but put simply Allez runs as a Node cron job every 3 minutes and is easily hostable in Heroku. Allez needs a few different pieces of information to access your GoQuest and OGS accounts. You can find the needed fields in the [sample.env](sample.env) file.
 
 ```
 GQ_PROFILE_NAME=
