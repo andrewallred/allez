@@ -40,3 +40,8 @@ OGS_USERNAME is your user name on OGS.
 #### OGS_PASSWORD
 To authorize the application you created above (see OGS_CLIENT_ID & OGS_CLIENT_SECRET) to access your account you'll have to add an OAUTH password in OGS. This is not your normal password and can only be used by authorized applications.
 
+#### LOCALE
+Use LOCALE to ensure that games are uploaded using your local time's format. Some example locales are en-US or it-IT. LOCALE is optional.
+
+#### TIMEZONE
+Use TIMEZONE to specify your local time zone so that games are not displayed using UTC. You can find a list of allowed timezones [here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) TIMEZONE is optional.
