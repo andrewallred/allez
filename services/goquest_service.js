@@ -53,11 +53,11 @@ async function openConnection() {
                 console.log(JSON.stringify(message));
 
                 let goQuestGame = message;
-                console.log("checking for game " + GoQuestGame.getFileName(goQuestGame));
                 if (goQuestGame.args[0].error)
                 {
                   console.log('Game has an error: ', goQuestGame.args[0].error)
                 } else {
+                  console.log("checking for game " + GoQuestGame.getFileName(goQuestGame));
                   let sgfAlreadyUploaded = await ogs.checkIfGameUploaded(GoQuestGame.getFileName(goQuestGame));
                   if (!sgfAlreadyUploaded) {
 
