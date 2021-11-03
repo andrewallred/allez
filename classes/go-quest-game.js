@@ -25,10 +25,11 @@ function toSgf(b, d, gtype) {
 function getFileName(game) {
 
     let isBlack = game.args[0].players[0].name == process.env.GQ_PROFILE_NAME;
+    let id = game.args[0].id;
 
     let size = game.args[0].gtype.replace("go", "");
     let sizeStr = size + "x" + size;
-    
+
     let locale = process.env.LOCALE;
     let timeZone = process.env.TIMEZONE;
     let created = new Date(game.args[0].created).toLocaleTimeString(locale,{timeZone:timeZone});
