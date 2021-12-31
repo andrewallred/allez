@@ -134,7 +134,7 @@ async function downloadLibrary() {
     let count = 0;
     for (let i = 0; i < library.games.length; i++) {
         let path = "./downloads/" + library.games[i][1] + ".json";
-        if (library.games[i][2] == collectionId && !fs.existsSync(path)) {
+        if ((library.games[i][2] == null) && !fs.existsSync(path)) {
             count++;
             //console.log(library.games[i]);
             setTimeout(async function () {
