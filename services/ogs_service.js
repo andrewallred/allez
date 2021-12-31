@@ -28,7 +28,7 @@ async function getBearerToken() {
     const results = await axios.post(tokenUrl, formData, config).catch(function (e) {
         console.log("error getting token " + e);
     });
-    
+
     return "Bearer " + results.data.access_token;
 
 }
@@ -175,7 +175,7 @@ async function createGoQuestCollection() {
         headers: {
             "Authorization": bearer
         },
-        data: {parent_id: 0, name: "GoQuest", private: 0}
+        data: { parent_id: 0, name: "GoQuest", private: 0 }
     }
 
     const results = await axios.post(createCollectionUrl, config).catch(function (e) {
@@ -204,7 +204,7 @@ async function triggerGameReview(gameId) {
         headers: {
             "Authorization": bearer
         },
-        data: {type: "full", engine: "katago"}
+        data: { type: "full", engine: "katago" }
     }
 
     const results = await axios.post(triggerReviewUrl, config).catch(function (e) {
