@@ -124,19 +124,26 @@ async function downloadLibrary() {
 
     let library = await getLibrary();
 
+
+    for (let i = 0; i < library.collections.length; i++) {
+        if (library.collections[i][1] == "GoQuest") {
+            collectionId = library.collections[i][0];
+        }
+    }
+
     let count = 0;
     for (let i = 0; i < library.games.length; i++) {
-        
-        let path = "./games/downloads/" + library.games[i][0] + ".sgf";
-        if (!fs.existsSync(path)) {
+        let path = "./downloads/" + library.games[i][1] + ".json";
+        if (library.games[i][2] == collectionId && !fs.existsSync(path)) {
             count++;
+            //console.log(library.games[i]);
             setTimeout(async function () {
-                let game = await getGame(library.games[i][0]);
+                let game = await getGame(library.games[i][1]);
                 data = JSON.stringify(game);
                 fs.writeFileSync(path, data);
                 console.log(path);
-            }, 2000 * count);
-        }
+            }, 1010 * count);
+        }        
     }
 
 }
