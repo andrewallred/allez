@@ -1,4 +1,4 @@
-module.exports = { getLibrary, checkIfGameUploaded, uploadSgf }
+module.exports = { getLibrary, checkIfGameUploaded, uploadSgf, downloadLibrary }
 
 require('dotenv').config()
 const axios = require('axios');
@@ -117,6 +117,48 @@ async function checkIfGameUploaded(gameName) {
     }
 
     return false;
+
+}
+
+async function downloadLibrary() {
+
+    let library = await getLibrary();
+
+    let count = 0;
+    for (let i = 0; i < library.games.length; i++) {
+        
+        let path = "./games/downloads/" + library.games[i][0] + ".sgf";
+        if (!fs.existsSync(path)) {
+            count++;
+            setTimeout(async function () {
+                let game = await getGame(library.games[i][0]);
+                data = JSON.stringify(game);
+                fs.writeFileSync(path, data);
+                console.log(path);
+            }, 2000 * count);
+        }
+    }
+
+}
+
+async function getGame(id) {
+
+    let gameUrl = 'https://online-go.com/api/v1/games/' + id;
+
+    let bearer = await getBearerToken();
+    let config = {
+        headers: {
+            "Authorization": bearer
+        }
+    }
+
+    const results = await axios.get(gameUrl, config).catch(function (e) {
+        console.log("error getting game " + e);
+    });
+
+    const data = results.data;
+
+    return data;
 
 }
 

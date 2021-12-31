@@ -6,7 +6,8 @@
   "scripts": {
     "main": "node index.js",
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "crawl": "node crawl.js"
   },
   "author": "",
   "license": "ISC",
