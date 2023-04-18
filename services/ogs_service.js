@@ -61,8 +61,9 @@ async function uploadSgf(fileName, sgf) {
 
     let collectionId = 0;
     for (let i = 0; i < library.collections.length; i++) {
-        if (library.collections[i][1] == "GoQuest") {
+        if (library.collections[i][1] == "GoQuest" && library.collections[i][0] > collectionId) {
             collectionId = library.collections[i][0];
+            console.log("GoQuest Library upload " + collectionId);
         }
     }
 
@@ -103,10 +104,11 @@ async function checkIfGameUploaded(gameName) {
 
     let library = await getLibrary();
 
-    let collectionId = null;
+    let collectionId = 0;
     for (let i = 0; i < library.collections.length; i++) {
-        if (library.collections[i][1] == "GoQuest") {
+        if (library.collections[i][1] == "GoQuest" && library.collections[i][0] > collectionId) {
             collectionId = library.collections[i][0];
+            console.log("GoQuest Library check " + collectionId);
         }
     }
 
