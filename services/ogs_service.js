@@ -55,17 +55,28 @@ async function getLibrary() {
 
 }
 
+function getCollectionIdByName(library, name) {
+
+    let collectionId = 0;
+    for (let i = 0; i < library.collections.length; i++) {
+        if (library.collections[i][1] == name && library.collections[i][0] > collectionId) {
+            collectionId = library.collections[i][0];
+            console.log(name + " Library found " + collectionId);
+        }
+    }
+    return collectionId;
+
+}
+
+function getGoQuestCollectionId(library) {
+    return getCollectionIdByName(library, "GoQuest");
+}
+
 async function uploadSgf(fileName, sgf) {
 
     let library = await getLibrary();
 
-    let collectionId = 0;
-    for (let i = 0; i < library.collections.length; i++) {
-        if (library.collections[i][1] == "GoQuest" && library.collections[i][0] > collectionId) {
-            collectionId = library.collections[i][0];
-            console.log("GoQuest Library upload " + collectionId);
-        }
-    }
+    let collectionId = getGoQuestCollectionId(library);
 
     let saveUrl = 'https://online-go.com/api/v1/me/games/sgf/' + collectionId;
 
@@ -107,13 +118,7 @@ async function checkIfGameUploaded(gameName) {
 
     let library = await getLibrary();
 
-    let collectionId = 0;
-    for (let i = 0; i < library.collections.length; i++) {
-        if (library.collections[i][1] == "GoQuest" && library.collections[i][0] > collectionId) {
-            collectionId = library.collections[i][0];
-            console.log("GoQuest Library check " + collectionId);
-        }
-    }
+    let collectionId = getGoQuestCollectionId(library);
 
     for (let i = 0; i < library.games.length; i++) {
         if (library.games[i][6] == gameName && library.games[i][2] == collectionId) {
@@ -129,12 +134,7 @@ async function downloadLibrary() {
 
     let library = await getLibrary();
 
-
-    for (let i = 0; i < library.collections.length; i++) {
-        if (library.collections[i][1] == "GoQuest") {
-            collectionId = library.collections[i][0];
-        }
-    }
+    let collectinonId = getGoQuestCollectionId(library);
 
     let count = 0;
     for (let i = 0; i < library.games.length; i++) {
