@@ -77,6 +77,9 @@ async function uploadSgf(fileName, sgf) {
     }
 
     console.log("games folder is " + gamesFolder);
+    if (!fs.existsSync(gamesFolder)){
+        fs.mkdirSync(gamesFolder);
+    }
 
     let file = gamesFolder + fileName;
     fs.writeFileSync(file, sgf);
