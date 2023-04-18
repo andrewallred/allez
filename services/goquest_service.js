@@ -41,11 +41,9 @@ async function openConnection() {
 
         } else {
 
-            // game ba276087
-            // profile d4b6e7ef
-
             let message = JSON.parse(data.replace('5:::', ''));
 
+            // ba276087 is 'name' for a game message
             if (message.name == "ba276087") {
 
                 console.log("received game");
@@ -79,9 +77,10 @@ async function openConnection() {
 
             }
 
+            // d4b6e7ef is the 'name' for a profile/player message
             if (message.name == "d4b6e7ef") {
 
-                console.log("received user");
+                console.log("received player");
 
                 let playerJson = message;
                 let lastGame = playerJson.args[0].lastGame;
