@@ -6,7 +6,7 @@ if (!cronStarted) {
 
     gq.openConnection();
 
-    // check games every minute
+    // check games every three minutes
     cron.schedule('0 */3 * * * *', () => {
 
         gq.openConnection();
