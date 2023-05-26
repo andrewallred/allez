@@ -12,7 +12,7 @@ async function openConnection() {
 
     let sessionData = await getSession();
     let sessionKey = sessionData[0];
-    let webSocketUrl = 'ws://wars.fm:3002/socket.io/1/websocket/' + sessionKey;
+    let webSocketUrl = 'ws://questgames.net:3002/socket.io/1/websocket/' + sessionKey;
     console.log(webSocketUrl);
     ws = new WebSocket(webSocketUrl);
 
@@ -83,6 +83,7 @@ async function openConnection() {
                 console.log("received player");
 
                 let playerJson = message;
+                console.log(playerJson);
                 let lastGame = playerJson.args[0].lastGame;
 
                 console.log("last game is");
@@ -134,7 +135,7 @@ function pollActiveGames() {
 
 async function getSession() {
 
-    let sessionUrl = 'http://wars.fm:3002/socket.io/1/?t=';
+    let sessionUrl = 'http://questgames.net:3002/socket.io/1/?t=';
     sessionUrl = sessionUrl + +new Date
     console.log(sessionUrl);
 
@@ -145,8 +146,8 @@ async function getSession() {
             "Connection": "keep-alive",
             "Cache-control": "no-cache",
             "Accept": "*/*",
-            "Origin": "http://wars.fm",
-            "Referer": "http://wars.fm/"
+            "Origin": "http://questgames.net",
+            "Referer": "http://questgames.net/"
         }
     }
 
