@@ -24,6 +24,8 @@ function toSgf(b, d, gtype) {
 
 function getFileName(game) {
 
+    let alwaysIncludeId = false;
+
     let isBlack = game.args[0].players[0].name == process.env.GQ_PROFILE_NAME;
 
     let id = game.args[0].id;
@@ -46,6 +48,8 @@ function getFileName(game) {
 
     if (!(opening)) {
         opening = id;
+    } else if (alwaysIncludeId) {
+        opening = opening + ' ' + id;
     }
 
     let fileName = opening + sizeStr + " - " + created;
